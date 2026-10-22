@@ -8,7 +8,7 @@ export async function onRequestPost({request,env}){
   if(typeof secret!=='string'||secret.length!==env.BOOTSTRAP_SECRET.length)return json({error:'Não autorizado'},403);
   let mismatch=0;for(let i=0;i<secret.length;i++)mismatch|=secret.charCodeAt(i)^env.BOOTSTRAP_SECRET.charCodeAt(i);
   if(mismatch)return json({error:'Não autorizado'},403);
-  if(!['kevin','bryan'].includes(username)||typeof password!=='string'||password.length<12||password.length>1024||typeof recovery_email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recovery_email))return json({error:'Dados inválidos'},400);
+  if(!['kevin','bryan'].includes(username)||typeof password!=='string'||password.length<6||password.length>1024||typeof recovery_email!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recovery_email))return json({error:'Dados inválidos'},400);
   const exists=await env.DB.prepare('SELECT id FROM users WHERE username=? COLLATE NOCASE').bind(username).first();
   if(exists)return json({error:'Conta já configurada'},409);
   const salt=randomToken().slice(0,32),iterations=310000,hash=await derive(password,salt,iterations);
